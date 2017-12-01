@@ -17,3 +17,9 @@ func (s *Server) GetVersion(ctx context.Context, in *pb.GetVersionRequest) (*pb.
 
 	return nil, fmt.Errorf("Unable to locate key %v", in.GetKey())
 }
+
+// SetVersion sets a given version number
+func (s *Server) SetVersion(ctx context.Context, in *pb.SetVersionRequest) (*pb.SetVersionResponse, error) {
+	s.versions = append(s.versions, in.GetSet())
+	return &pb.SetVersionResponse{Response: in.GetSet()}, nil
+}

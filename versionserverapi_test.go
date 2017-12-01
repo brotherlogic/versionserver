@@ -31,5 +31,22 @@ func TestGetFail(t *testing.T) {
 	if err == nil {
 		t.Fatalf("No error returned?: %v", val)
 	}
+}
 
+func TestSetAndGet(t *testing.T) {
+	s := Init()
+	_, err := s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "donkey", Value: 1234}})
+	if err != nil {
+		t.Fatalf("Error in set version: %v", err)
+	}
+
+	val, err := s.GetVersion(context.Background(), &pb.GetVersionRequest{Key: "donkey"})
+
+	if err != nil {
+		t.Fatalf("Error in get version: %v", err)
+	}
+
+	if val.GetVersion().GetValue() != 1234 && val.GetVersion().GetKey() != "donkey" {
+		t.Errorf("Bad version returned: %v", val)
+	}
 }
