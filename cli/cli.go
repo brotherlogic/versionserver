@@ -1,8 +1,6 @@
 package main
 
 import (
-	"flag"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -15,20 +13,17 @@ import (
 )
 
 func main() {
-     ip, port, err := utils.Resolve("versionserver")
-     if err != nil {
-     	log.Fatalf("Error resolving server: %v", err)
-		}
-	conn, _ := grpc.Dial(ip+":"+strconv.Itoa(int(port)), grpc.WithInsecure())
-				defer conn.Close()
-
-				registry := pb.NewVersionServerClient(conn)
-				answer, err := registry.GetVersion(context.Background(), &pb.GetVersionRequest{Key: os.Args[1]})
-				if err != nil {
-					log.Fatalf("Error reading version: %v", err)
-				}
-				log.Printf("Answer = %v", answer)
-			}
-		}
+	ip, port, err := utils.Resolve("versionserver")
+	if err != nil {
+		log.Fatalf("Error resolving server: %v", err)
 	}
+	conn, _ := grpc.Dial(ip+":"+strconv.Itoa(int(port)), grpc.WithInsecure())
+	defer conn.Close()
+
+	registry := pb.NewVersionServerClient(conn)
+	answer, err := registry.GetVersion(context.Background(), &pb.GetVersionRequest{Key: os.Args[1]})
+	if err != nil {
+		log.Fatalf("Error reading version: %v", err)
+	}
+	log.Printf("Answer = %v", answer)
 }
