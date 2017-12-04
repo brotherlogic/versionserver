@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package recordcollection;
+package versionserver;
 
 message Version {
   string key = 1;
@@ -15,6 +15,15 @@ message GetVersionResponse {
   Version version = 2;
 }
 
+message SetVersionRequest {
+ Version set = 1;
+}
+
+message SetVersionResponse {
+  Version response = 1;
+}
+
 service VersionServer {
   rpc GetVersion(GetVersionRequest) returns (GetVersionResponse) {};
+  rpc SetVersion(SetVersionRequest) returns (SetVersionResponse) {};
 }
