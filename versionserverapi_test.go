@@ -9,6 +9,7 @@ import (
 
 func TestRestart(t *testing.T) {
 	s := Init(".testrestart")
+	s.SkipLog = true
 	_, err := s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "donkey", Value: 1234}})
 
 	s2 := Init(".testrestart")
@@ -23,6 +24,7 @@ func TestRestart(t *testing.T) {
 
 func TestPass(t *testing.T) {
 	s := Init(".testpass")
+	s.SkipLog = true
 	s.versions = append(s.versions, &pb.Version{Key: "donkey", Value: 1234})
 	val, err := s.GetVersion(context.Background(), &pb.GetVersionRequest{Key: "donkey"})
 	if err != nil {
@@ -35,6 +37,7 @@ func TestPass(t *testing.T) {
 
 func TestGetFail(t *testing.T) {
 	s := Init(".testfail")
+	s.SkipLog = true
 	s.versions = append(s.versions, &pb.Version{Key: "donkey", Value: 1234})
 	val, err := s.GetVersion(context.Background(), &pb.GetVersionRequest{Key: "magic"})
 	if err == nil {
@@ -44,6 +47,7 @@ func TestGetFail(t *testing.T) {
 
 func TestGetWriteFail(t *testing.T) {
 	s := Init(".testwritefail/")
+	s.SkipLog = true
 	val, err := s.SetVersion(context.Background(), &pb.SetVersionRequest{&pb.Version{Key: "magic/donkey", Value: 1234}})
 	if err == nil {
 		t.Fatalf("No error returned?: %v", val)
@@ -52,6 +56,7 @@ func TestGetWriteFail(t *testing.T) {
 
 func TestSetAndGet(t *testing.T) {
 	s := Init(".testsetandget")
+	s.SkipLog = true
 	_, err := s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "donkey", Value: 1234}})
 	if err != nil {
 		t.Fatalf("Error in set version: %v", err)

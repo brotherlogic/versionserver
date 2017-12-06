@@ -23,6 +23,7 @@ func (s *Server) SetVersion(ctx context.Context, in *pb.SetVersionRequest) (*pb.
 	s.versions = append(s.versions, in.GetSet())
 	err := s.saveVersions()
 	if err != nil {
+		s.Log(fmt.Sprintf("Error writing: %v", in))
 		return nil, err
 	}
 	return &pb.SetVersionResponse{Response: in.GetSet()}, nil
