@@ -21,6 +21,9 @@ func (s *Server) GetVersion(ctx context.Context, in *pb.GetVersionRequest) (*pb.
 // SetVersion sets a given version number
 func (s *Server) SetVersion(ctx context.Context, in *pb.SetVersionRequest) (*pb.SetVersionResponse, error) {
 	s.versions = append(s.versions, in.GetSet())
-	s.saveVersions()
+	err := s.saveVersions()
+	if err != nil {
+		return nil, err
+	}
 	return &pb.SetVersionResponse{Response: in.GetSet()}, nil
 }

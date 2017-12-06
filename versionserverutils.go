@@ -20,9 +20,14 @@ func (s *Server) loadVersions() error {
 	return nil
 }
 
-func (s *Server) saveVersions() {
+func (s *Server) saveVersions() error {
 	for _, v := range s.versions {
 		data, _ := proto.Marshal(v)
-		ioutil.WriteFile(s.dir+"/"+v.GetKey(), data, 0700)
+		err := ioutil.WriteFile(s.dir+"/"+v.GetKey(), data, 0700)
+		if err != nil {
+			return err
+		}
 	}
+
+	return nil
 }

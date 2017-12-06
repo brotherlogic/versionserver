@@ -42,6 +42,14 @@ func TestGetFail(t *testing.T) {
 	}
 }
 
+func TestGetWriteFail(t *testing.T) {
+	s := Init(".testwritefail/")
+	val, err := s.SetVersion(context.Background(), &pb.SetVersionRequest{&pb.Version{Key: "magic/donkey", Value: 1234}})
+	if err == nil {
+		t.Fatalf("No error returned?: %v", val)
+	}
+}
+
 func TestSetAndGet(t *testing.T) {
 	s := Init(".testsetandget")
 	_, err := s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "donkey", Value: 1234}})
