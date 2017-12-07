@@ -66,7 +66,7 @@ func main() {
 	server.PrepServer()
 	server.Register = server
 
-	server.RegisterServer("versionserver", true)
+	server.RegisterServer("versionserver", false)
 	server.Log("Starting!")
 	server.Serve()
 }
