@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -49,7 +50,11 @@ func (s *Server) Mote(master bool) error {
 
 // GetState gets the state of the server
 func (s *Server) GetState() []*pbg.State {
-	return []*pbg.State{&pbg.State{Key: "keys", Value: int64(len(s.versions))}}
+	keys := make([]string, 0)
+	for _, k := range s.versions {
+		keys = append(keys, k.GetKey())
+	}
+	return []*pbg.State{&pbg.State{Key: "keys", Text: fmt.Sprintf("%v", keys)}}
 }
 
 func main() {
