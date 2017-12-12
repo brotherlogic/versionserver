@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -21,14 +22,13 @@ func main() {
 	defer conn.Close()
 
 	registry := pb.NewVersionServerClient(conn)
-	s, err := registry.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: os.Args[1], Value: 1234}})
+	_, err = registry.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: os.Args[1], Value: 1234}})
 	if err != nil {
 		log.Fatalf("Error setting version: %v", err)
 	}
-	log.Printf("Set = %v", s)
 	answer, err := registry.GetVersion(context.Background(), &pb.GetVersionRequest{Key: os.Args[1]})
 	if err != nil {
 		log.Fatalf("Error reading version: %v", err)
 	}
-	log.Printf("Answer = %v", answer)
+	fmt.Printf("Answer = %v\n", answer)
 }
