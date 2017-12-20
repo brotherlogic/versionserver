@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -26,7 +27,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("Error reading version: %v", err)
 		}
-		log.Printf("Answer = %v", answer)
+		fmt.Printf("Answer = %v\n", answer)
 	} else {
 		val, err := strconv.Atoi(os.Args[2])
 		if err != nil {
@@ -37,6 +38,6 @@ func main() {
 		if err != nil {
 			log.Fatalf("Error reading version: %v", err)
 		}
-		log.Printf("Answer = %v", answer)
+		fmt.Printf("Answer = %v\n", answer)
 	}
 }

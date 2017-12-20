@@ -24,6 +24,8 @@ type Server struct {
 // Init builds the server
 func Init(dir string) *Server {
 	s := &Server{GoServer: &goserver.GoServer{}, dir: dir}
+	s.PrepServer()
+	s.Register = s
 
 	if _, err := os.Stat(s.dir); os.IsNotExist(err) {
 		os.Mkdir(s.dir, 0700)
@@ -68,8 +70,6 @@ func main() {
 		log.SetOutput(ioutil.Discard)
 	}
 	server := Init(*dir)
-	server.PrepServer()
-	server.Register = server
 
 	server.RegisterServer("versionserver", false)
 	server.Log("Starting!")
