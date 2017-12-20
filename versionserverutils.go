@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
+	"os"
 
 	"github.com/golang/protobuf/proto"
 
@@ -9,6 +11,8 @@ import (
 )
 
 func (s *Server) loadVersions() error {
+	v, err := os.Getwd()
+	s.Log(fmt.Sprintf("Loading %v from %v but %v", s.dir, v, err))
 	dirs, _ := ioutil.ReadDir(s.dir)
 	for _, f := range dirs {
 		data, _ := ioutil.ReadFile(s.dir + "/" + f.Name())
