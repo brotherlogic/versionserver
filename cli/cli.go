@@ -11,6 +11,9 @@ import (
 	"google.golang.org/grpc"
 
 	pb "github.com/brotherlogic/versionserver/proto"
+
+//Needed to pull in gzip encoding init
+	 _ "google.golang.org/grpc/encoding/gzip"
 )
 
 func main() {
