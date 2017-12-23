@@ -1,0 +1,1 @@
+Stores a key/value
