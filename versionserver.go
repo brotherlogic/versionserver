@@ -41,6 +41,7 @@ func Init(dir string) *Server {
 	s := &Server{GoServer: &goserver.GoServer{}, dir: dir}
 	s.PrepServer()
 	s.Register = s
+	s.db = prodDiskBridge{}
 
 	if _, err := os.Stat(s.dir); os.IsNotExist(err) {
 		os.Mkdir(s.dir, 0700)
