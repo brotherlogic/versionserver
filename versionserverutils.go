@@ -27,6 +27,7 @@ func (s *Server) loadVersions() error {
 func (s *Server) saveVersions() error {
 	for _, v := range s.versions {
 		data, _ := proto.Marshal(v)
+		s.Log(fmt.Sprintf("Saving %v to %v", v, s.dir+"/"+v.GetKey()))
 		err := ioutil.WriteFile(s.dir+"/"+v.GetKey(), data, 0700)
 		if err != nil {
 			return err

@@ -12,8 +12,13 @@ import (
 
 	pb "github.com/brotherlogic/versionserver/proto"
 
+<<<<<<< Updated upstream
 //Needed to pull in gzip encoding init
 	 _ "google.golang.org/grpc/encoding/gzip"
+=======
+	//Needed to pull in gzip encoding init
+	_ "google.golang.org/grpc/encoding/gzip"
+>>>>>>> Stashed changes
 )
 
 func main() {
