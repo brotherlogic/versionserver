@@ -8,7 +8,7 @@ import (
 )
 
 func TestWeirdLoad(t *testing.T) {
-	s := Init("weird_test")
+	s := InitTest("weird_test")
 
 	if len(s.versions) != 3 {
 		t.Errorf("Failure to load versions")

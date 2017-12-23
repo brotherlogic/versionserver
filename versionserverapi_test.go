@@ -2,17 +2,54 @@ package main
 
 import (
 	"context"
+	"errors"
+	"io/ioutil"
+	"os"
 	"testing"
 
 	pb "github.com/brotherlogic/versionserver/proto"
 )
 
-func TestRestart(t *testing.T) {
-	s := Init(".testrestart")
-	s.SkipLog = true
-	_, err := s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "donkey", Value: 1234}})
+type testDiskBridge struct {
+	failCwd     bool
+	failReadDir bool
+	failRead    bool
+}
 
-	s2 := Init(".testrestart")
+func (p testDiskBridge) getwd() (string, error) {
+	if p.failCwd {
+		return "", errors.New("Designed to fail")
+	}
+	return os.Getwd()
+}
+
+func (p testDiskBridge) readdir(dir string) ([]os.FileInfo, error) {
+	if p.failReadDir {
+		return make([]os.FileInfo, 0), errors.New("Designed to fail")
+	}
+	return ioutil.ReadDir(dir)
+}
+
+func (p testDiskBridge) read(file string) ([]byte, error) {
+	if p.failRead {
+		return make([]byte, 0), errors.New("Designed to fail")
+	}
+	return ioutil.ReadFile(file)
+}
+
+func InitTest(dir string) *Server {
+	s := Init(dir)
+	s.SkipLog = true
+	s.db = testDiskBridge{}
+	s.loadVersions()
+	return s
+}
+
+func TestRestart(t *testing.T) {
+	s := InitTest(".testrestart")
+	s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "donkey", Value: 1234}})
+
+	s2 := InitTest(".testrestart")
 	val, err := s2.GetVersion(context.Background(), &pb.GetVersionRequest{Key: "donkey"})
 	if err != nil {
 		t.Fatalf("Error in get version: %v", err)
@@ -23,8 +60,7 @@ func TestRestart(t *testing.T) {
 }
 
 func TestPass(t *testing.T) {
-	s := Init(".testpass")
-	s.SkipLog = true
+	s := InitTest(".testpass")
 	s.versions = append(s.versions, &pb.Version{Key: "donkey", Value: 1234})
 	val, err := s.GetVersion(context.Background(), &pb.GetVersionRequest{Key: "donkey"})
 	if err != nil {
@@ -36,8 +72,7 @@ func TestPass(t *testing.T) {
 }
 
 func TestGetFail(t *testing.T) {
-	s := Init(".testfail")
-	s.SkipLog = true
+	s := InitTest(".testfail")
 	s.versions = append(s.versions, &pb.Version{Key: "donkey", Value: 1234})
 	val, err := s.GetVersion(context.Background(), &pb.GetVersionRequest{Key: "magic"})
 	if err == nil {
@@ -46,17 +81,15 @@ func TestGetFail(t *testing.T) {
 }
 
 func TestGetWriteFail(t *testing.T) {
-	s := Init(".testwritefail/")
-	s.SkipLog = true
-	val, err := s.SetVersion(context.Background(), &pb.SetVersionRequest{&pb.Version{Key: "magic/donkey", Value: 1234}})
+	s := InitTest(".testwritefail/")
+	val, err := s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "magic/donkey", Value: 1234}})
 	if err == nil {
 		t.Fatalf("No error returned?: %v", val)
 	}
 }
 
 func TestSetAndGet(t *testing.T) {
-	s := Init(".testsetandget")
-	s.SkipLog = true
+	s := InitTest(".testsetandget")
 	_, err := s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "donkey", Value: 1234}})
 	if err != nil {
 		t.Fatalf("Error in set version: %v", err)

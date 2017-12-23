@@ -19,6 +19,21 @@ type Server struct {
 	*goserver.GoServer
 	versions []*pb.Version
 	dir      string
+	db       diskBridge
+}
+
+type prodDiskBridge struct{}
+
+func (p prodDiskBridge) getwd() (string, error) {
+	return os.Getwd()
+}
+
+func (p prodDiskBridge) readdir(dir string) ([]os.FileInfo, error) {
+	return ioutil.ReadDir(dir)
+}
+
+func (p prodDiskBridge) read(file string) ([]byte, error) {
+	return ioutil.ReadFile(file)
 }
 
 // Init builds the server
@@ -31,7 +46,6 @@ func Init(dir string) *Server {
 		os.Mkdir(s.dir, 0700)
 	}
 
-	s.loadVersions()
 	return s
 }
 
@@ -47,7 +61,7 @@ func (s *Server) ReportHealth() bool {
 
 // Mote promotes/demotes this server
 func (s *Server) Mote(master bool) error {
-	return nil
+	return s.loadVersions()
 }
 
 // GetState gets the state of the server
