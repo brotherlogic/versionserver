@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -17,11 +16,10 @@ type diskBridge interface {
 }
 
 func (s *Server) loadVersions() error {
-	v, err := s.db.getwd()
+	_, err := s.db.getwd()
 	if err != nil {
 		return err
 	}
-	s.Log(fmt.Sprintf("Loading %v from %v but %v", s.dir, v, err))
 	dirs, err := s.db.readdir(s.dir)
 	if err != nil {
 		return err
@@ -42,7 +40,6 @@ func (s *Server) loadVersions() error {
 func (s *Server) saveVersions() error {
 	for _, v := range s.versions {
 		data, _ := proto.Marshal(v)
-		s.Log(fmt.Sprintf("Saving %v to %v", v, s.dir+"/"+v.GetKey()))
 		err := ioutil.WriteFile(s.dir+"/"+v.GetKey(), data, 0700)
 		if err != nil {
 			return err
