@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -42,7 +43,7 @@ func (s *Server) saveVersions() error {
 		data, _ := proto.Marshal(v)
 		err := ioutil.WriteFile(s.dir+"/"+v.GetKey(), data, 0700)
 		if err != nil {
-			return err
+			return fmt.Errorf("Error writing '%v' - leads to %v", v, err)
 		}
 	}
 
