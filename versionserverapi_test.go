@@ -47,15 +47,25 @@ func InitTest(dir string) *Server {
 
 func TestRestart(t *testing.T) {
 	s := InitTest(".testrestart")
-	s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "donkey", Value: 1234}})
+	s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "donkey.magic", Value: 1234}})
 
 	s2 := InitTest(".testrestart")
-	val, err := s2.GetVersion(context.Background(), &pb.GetVersionRequest{Key: "donkey"})
+	val, err := s2.GetVersion(context.Background(), &pb.GetVersionRequest{Key: "donkey.magic"})
 	if err != nil {
 		t.Fatalf("Error in get version: %v", err)
 	}
-	if val.GetVersion().GetValue() != 1234 && val.GetVersion().GetKey() != "donkey" {
+	if val.GetVersion().GetValue() != 1234 && val.GetVersion().GetKey() != "donkey.magic" {
 		t.Errorf("Bad version returned: %v", val)
+	}
+}
+
+func TestMultiWrite(t *testing.T) {
+	s := InitTest(".testmultiwrite")
+	s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "donkey", Value: 1234}})
+	s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "donkey", Value: 12345}})
+
+	if len(s.versions) != 1 {
+		t.Errorf("Too Many versions: %v", s.versions)
 	}
 }
 

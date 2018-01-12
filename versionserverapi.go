@@ -20,7 +20,19 @@ func (s *Server) GetVersion(ctx context.Context, in *pb.GetVersionRequest) (*pb.
 
 // SetVersion sets a given version number
 func (s *Server) SetVersion(ctx context.Context, in *pb.SetVersionRequest) (*pb.SetVersionResponse, error) {
-	s.versions = append(s.versions, in.GetSet())
+
+	found := false
+	for _, v := range s.versions {
+		if v.GetKey() == in.GetSet().GetKey() {
+			v.Value = in.GetSet().GetValue()
+			found = true
+		}
+	}
+
+	if !found {
+		s.versions = append(s.versions, in.GetSet())
+	}
+
 	err := s.saveVersions()
 	if err != nil {
 		s.Log(fmt.Sprintf("Error writing: %v -> %v", in, err))
