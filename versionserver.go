@@ -88,5 +88,9 @@ func main() {
 
 	server.RegisterServer("versionserver", false)
 	server.Log("Starting!")
-	server.Serve()
+	err := server.Serve()
+
+	if err != nil {
+		fmt.Printf("Error serving: %v\n", err)
+	}
 }
