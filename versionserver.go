@@ -76,7 +76,7 @@ func (s *Server) GetState() []*pbg.State {
 
 func main() {
 	var quiet = flag.Bool("quiet", false, "Show all output")
-	var dir = flag.String("save_dir", "tmp", "Directory in which to save all the files")
+	var dir = flag.String("save_dir", "/media/scratch/versionserver/", "Directory in which to save all the files")
 	flag.Parse()
 
 	//Turn off logging
