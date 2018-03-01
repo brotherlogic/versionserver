@@ -30,7 +30,6 @@ func (s *Server) SetVersion(ctx context.Context, in *pb.SetVersionRequest) (*pb.
 	}
 
 	if !found {
-	        s.Log(fmt.Sprintf("Writing log: %v -> %v", s.versions, in.GetSet()))
 		s.versions = append(s.versions, in.GetSet())
 	}
 

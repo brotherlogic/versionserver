@@ -87,7 +87,6 @@ func main() {
 	server := Init(*dir)
 
 	server.RegisterServer("versionserver", false)
-	server.Log("Starting!")
 	err := server.Serve()
 
 	if err != nil {
