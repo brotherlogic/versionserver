@@ -17,6 +17,7 @@ type diskBridge interface {
 }
 
 func (s *Server) loadVersions() error {
+    	s.versions = make([]*pb.Version, 0)
 	_, err := s.db.getwd()
 	if err != nil {
 		return err
