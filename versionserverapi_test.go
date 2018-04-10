@@ -100,7 +100,7 @@ func TestGetWriteFail(t *testing.T) {
 
 func TestSetAndGet(t *testing.T) {
 	s := InitTest(".testsetandget")
-	_, err := s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "donkey", Value: 1234}})
+	_, err := s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "donkey", Value: 1234, Setter: "blah"}})
 	if err != nil {
 		t.Fatalf("Error in set version: %v", err)
 	}
@@ -108,7 +108,7 @@ func TestSetAndGet(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error in get version: %v", err)
 	}
-	if val.GetVersion().GetValue() != 1234 && val.GetVersion().GetKey() != "donkey" {
+	if val.GetVersion().GetValue() != 1234 || val.GetVersion().GetKey() != "donkey" || val.GetVersion().GetSetter() != "blah" {
 		t.Errorf("Bad version returned: %v", val)
 	}
 }

@@ -5,6 +5,7 @@ package versionserver;
 message Version {
   string key = 1;
   int64 value = 2;
+  string setter = 3;
 }
 
 message GetVersionRequest {
