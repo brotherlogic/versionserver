@@ -25,6 +25,7 @@ func (s *Server) SetVersion(ctx context.Context, in *pb.SetVersionRequest) (*pb.
 	for _, v := range s.versions {
 		if v.GetKey() == in.GetSet().GetKey() {
 			v.Value = in.GetSet().GetValue()
+			v.Setter = in.GetSet().GetSetter()
 			found = true
 		}
 	}

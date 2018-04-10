@@ -62,10 +62,14 @@ func TestRestart(t *testing.T) {
 func TestMultiWrite(t *testing.T) {
 	s := InitTest(".testmultiwrite")
 	s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "donkey", Value: 1234}})
-	s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "donkey", Value: 12345}})
+	s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "donkey", Value: 12345, Setter: "ThisIsNew"}})
 
 	if len(s.versions) != 1 {
 		t.Errorf("Too Many versions: %v", s.versions)
+	}
+
+	if s.versions[0].Value != 12345 || s.versions[0].Setter != "ThisIsNew" {
+		t.Errorf("Value has not been overwritten")
 	}
 }
 

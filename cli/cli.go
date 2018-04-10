@@ -37,7 +37,7 @@ func main() {
 			log.Fatalf("Error parsing number: %v", err)
 		}
 
-		req := &pb.SetVersionRequest{Set: &pb.Version{Key: os.Args[1], Value: int64(val)}}
+		req := &pb.SetVersionRequest{Set: &pb.Version{Key: os.Args[1], Value: int64(val), Setter: "CLI"}}
 		fmt.Printf("Writing %v\n", req)
 		answer, err := registry.SetVersion(context.Background(), req)
 		if err != nil {
