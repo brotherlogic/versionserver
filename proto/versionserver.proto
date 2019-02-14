@@ -24,7 +24,18 @@ message SetVersionResponse {
   Version response = 1;
 }
 
+message SetIfLessThanRequest {
+  Version set = 1;
+  int64 trigger_value = 2;
+}
+
+message SetIfLessThanResponse {
+  Version response = 1;
+  bool success = 2;
+}
+
 service VersionServer {
   rpc GetVersion(GetVersionRequest) returns (GetVersionResponse) {};
   rpc SetVersion(SetVersionRequest) returns (SetVersionResponse) {};
+  rpc SetIfLessThan(SetIfLessThanRequest) returns (SetIfLessThanResponse) {};
 }

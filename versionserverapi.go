@@ -41,3 +41,8 @@ func (s *Server) SetVersion(ctx context.Context, in *pb.SetVersionRequest) (*pb.
 	}
 	return &pb.SetVersionResponse{Response: in.GetSet()}, nil
 }
+
+// SetIfLessThan sets the version if the value is less than the given
+func (s *Server) SetIfLessThan(ctx context.Context, in *pb.SetIfLessThanRequest) (*pb.SetIfLessThanResponse, error) {
+	return nil, fmt.Errorf("Not implemented yet")
+}
