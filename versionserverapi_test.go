@@ -116,3 +116,11 @@ func TestSetAndGet(t *testing.T) {
 		t.Errorf("Bad version returned: %v", val)
 	}
 }
+
+func TestRunSetIfLessThan(t *testing.T) {
+	s := InitTest(".testsetandget")
+	_, err := s.SetIfLessThan(context.Background(), &pb.SetIfLessThanRequest{Set: &pb.Version{Key: "donkey", Value: 1234, Setter: "blah"}})
+	if err == nil {
+		t.Errorf("Not implemented wha")
+	}
+}
