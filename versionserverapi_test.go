@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
+	"time"
 
 	pb "github.com/brotherlogic/versionserver/proto"
 )
@@ -38,6 +39,15 @@ func (p testDiskBridge) read(file string) ([]byte, error) {
 }
 
 func InitTest(dir string) *Server {
+	s := Init(dir)
+	s.SkipLog = true
+	s.db = testDiskBridge{}
+	s.loadVersions()
+	return s
+}
+
+func InitTestClean(dir string) *Server {
+	os.RemoveAll(dir)
 	s := Init(dir)
 	s.SkipLog = true
 	s.db = testDiskBridge{}
@@ -118,9 +128,80 @@ func TestSetAndGet(t *testing.T) {
 }
 
 func TestRunSetIfLessThan(t *testing.T) {
-	s := InitTest(".testsetandget")
-	_, err := s.SetIfLessThan(context.Background(), &pb.SetIfLessThanRequest{Set: &pb.Version{Key: "donkey", Value: 1234, Setter: "blah"}})
-	if err == nil {
-		t.Errorf("Not implemented wha")
+	s := InitTestClean(".testrunsetiflessthan")
+	res, err := s.SetIfLessThan(context.Background(), &pb.SetIfLessThanRequest{Set: &pb.Version{Key: "donkey", Value: 1234, Setter: "blah"}})
+	if err != nil {
+		t.Fatalf("Test run has not succeeded: %v", err)
 	}
+
+	if !res.Success {
+		t.Fatalf("Unable to set value: %v", res)
+	}
+
+	res, err = s.SetIfLessThan(context.Background(), &pb.SetIfLessThanRequest{Set: &pb.Version{Key: "donkey", Value: 123, Setter: "blah"}, TriggerValue: 123})
+
+	if err != nil {
+		t.Fatalf("Unable to set value: %v", err)
+	}
+
+	if res.Success {
+		t.Fatalf("We shouldn't have been able to set the value")
+	}
+
+	val, err := s.GetVersion(context.Background(), &pb.GetVersionRequest{Key: "donkey"})
+	if err != nil || val.GetVersion().GetValue() != 1234 {
+		t.Fatalf("The value has been reset, or we've failed to update")
+	}
+
+	res, err = s.SetIfLessThan(context.Background(), &pb.SetIfLessThanRequest{Set: &pb.Version{Key: "donkey", Value: 12345, Setter: "blah"}, TriggerValue: 12345})
+
+	if err != nil {
+		t.Fatalf("Unable to set value: %v", err)
+	}
+
+	if !res.Success {
+		t.Fatalf("Unable to set value - we should be")
+	}
+
+	val, err = s.GetVersion(context.Background(), &pb.GetVersionRequest{Key: "donkey"})
+	if err != nil || val.GetVersion().GetValue() != 12345 {
+		t.Fatalf("Value has been reset or we've failed: %v or %v (response was %v)", val, err, res)
+	}
+}
+
+type runner struct {
+	count int
+}
+
+func (r *runner) runTest(te *testing.T, s *Server) {
+	res, err := s.SetIfLessThan(context.Background(), &pb.SetIfLessThanRequest{Set: &pb.Version{Key: "donkey", Value: 123, Setter: "blah"}, TriggerValue: 20})
+	if err != nil {
+		te.Errorf("Error setting: %v", err)
+	}
+
+	if res.Success {
+		r.count++
+	}
+}
+
+func TestRunSimulSets(t *testing.T) {
+	s := InitTestClean(".testrunsimul")
+	s.slowDown = true
+	s.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: "donkey", Value: 10, Setter: "blah"}})
+
+	count := &runner{count: 0}
+
+	go func(te *testing.T, s *Server) {
+		count.runTest(te, s)
+	}(t, s)
+	go func(te *testing.T, s *Server) {
+		count.runTest(te, s)
+	}(t, s)
+
+	time.Sleep(time.Second * 5)
+
+	if count.count > 1 {
+		t.Errorf("Simultaneous changes have failed")
+	}
+
 }

@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"sync"
 
 	"github.com/brotherlogic/goserver"
 	"golang.org/x/net/context"
@@ -18,9 +19,11 @@ import (
 //Server main server type
 type Server struct {
 	*goserver.GoServer
-	versions []*pb.Version
-	dir      string
-	db       diskBridge
+	versions   []*pb.Version
+	dir        string
+	db         diskBridge
+	slowDown   bool
+	writeMutex *sync.Mutex
 }
 
 type prodDiskBridge struct{}
@@ -39,7 +42,12 @@ func (p prodDiskBridge) read(file string) ([]byte, error) {
 
 // Init builds the server
 func Init(dir string) *Server {
-	s := &Server{GoServer: &goserver.GoServer{}, dir: dir}
+	s := &Server{
+		GoServer:   &goserver.GoServer{},
+		dir:        dir,
+		slowDown:   false,
+		writeMutex: &sync.Mutex{},
+	}
 	s.PrepServer()
 	s.Register = s
 	s.db = prodDiskBridge{}
