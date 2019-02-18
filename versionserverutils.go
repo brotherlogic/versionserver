@@ -17,7 +17,7 @@ type diskBridge interface {
 }
 
 func (s *Server) loadVersions() error {
-    	s.versions = make([]*pb.Version, 0)
+	s.versions = make([]*pb.Version, 0)
 	_, err := s.db.getwd()
 	if err != nil {
 		return err
@@ -41,10 +41,12 @@ func (s *Server) loadVersions() error {
 
 func (s *Server) saveVersions() error {
 	for _, v := range s.versions {
-		data, _ := proto.Marshal(v)
-		err := ioutil.WriteFile(s.dir+"/"+v.GetKey(), data, 0700)
-		if err != nil {
-			return fmt.Errorf("Error writing '%v' - leads to %v", v, err)
+		if len(v.GetKey()) > 0 {
+			data, _ := proto.Marshal(v)
+			err := ioutil.WriteFile(s.dir+"/"+v.GetKey(), data, 0700)
+			if err != nil {
+				return fmt.Errorf("Error writing '%v' - leads to %v", v, err)
+			}
 		}
 	}
 
