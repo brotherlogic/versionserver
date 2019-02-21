@@ -17,5 +17,5 @@
 
 .test*
 
-cli/cli
+versionserver_cli/versionserver_cli
 versionserver

@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/brotherlogic/goserver/utils"
 	"golang.org/x/net/context"
@@ -25,24 +26,26 @@ func main() {
 	defer conn.Close()
 
 	registry := pb.NewVersionServerClient(conn)
-	if len(os.Args) == 2 {
-		answer, err := registry.GetVersion(context.Background(), &pb.GetVersionRequest{Key: os.Args[1]})
+	switch os.Args[1] {
+	case "get":
+		answer, err := registry.GetVersion(context.Background(), &pb.GetVersionRequest{Key: os.Args[2]})
 		if err != nil {
 			log.Fatalf("Error reading version: %v", err)
 		}
 		fmt.Printf("Answer = %v\n", answer)
-	} else {
-		val, err := strconv.Atoi(os.Args[2])
-		if err != nil {
-			log.Fatalf("Error parsing number: %v", err)
-		}
-
-		req := &pb.SetVersionRequest{Set: &pb.Version{Key: os.Args[1], Value: int64(val), Setter: "CLI"}}
-		fmt.Printf("Writing %v\n", req)
-		answer, err := registry.SetVersion(context.Background(), req)
+	case "guard":
+		answer, err := registry.SetIfLessThan(context.Background(),
+			&pb.SetIfLessThanRequest{
+				Set:          &pb.Version{Key: "guard" + os.Args[2], Value: time.Now().Add(time.Minute * 5).Unix(), Setter: "cli"},
+				TriggerValue: time.Now().Unix(),
+			})
 		if err != nil {
 			log.Fatalf("Error reading version: %v", err)
 		}
-		fmt.Printf("Answer = %v\n", answer)
+		if !answer.Success {
+			os.Exit(1)
+		}
+	default:
+		fmt.Printf("Unknown command: %v", os.Args[1])
 	}
 }
