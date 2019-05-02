@@ -27,12 +27,14 @@ func (s *Server) loadVersions() error {
 		return err
 	}
 	for _, f := range dirs {
+		s.Log(fmt.Sprintf("Reading %v", s.dir+"/"+f.Name()))
 		data, err := s.db.read(s.dir + "/" + f.Name())
 		if err != nil {
 			return err
 		}
 		version := &pb.Version{}
 		proto.Unmarshal(data, version)
+		s.Log(fmt.Sprintf("Convert to %v", version))
 		s.versions = append(s.versions, version)
 	}
 
