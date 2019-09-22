@@ -18,7 +18,7 @@ import (
 )
 
 func main() {
-	ip, port, err := utils.Resolve("versionserver")
+	ip, port, err := utils.Resolve("versionserver", "versionserver-cli")
 	if err != nil {
 		log.Fatalf("Error resolving server: %v", err)
 	}
@@ -33,6 +33,14 @@ func main() {
 			log.Fatalf("Error reading version: %v", err)
 		}
 		fmt.Printf("Answer = %v\n", answer)
+	case "set":
+		val, _ := strconv.Atoi(os.Args[3])
+		answer, err := registry.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: os.Args[2], Value: int64(val)}})
+		if err != nil {
+			log.Fatalf("Error writing version: %v", err)
+		}
+		fmt.Printf("Answer = %v\n", answer)
+
 	case "guard":
 		answer, err := registry.SetIfLessThan(context.Background(),
 			&pb.SetIfLessThanRequest{
