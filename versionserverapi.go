@@ -64,7 +64,7 @@ func (s *Server) SetIfLessThan(ctx context.Context, in *pb.SetIfLessThanRequest)
 				return &pb.SetIfLessThanResponse{Success: true, Response: v}, err
 			}
 
-			return &pb.SetIfLessThanResponse{Success: false}, nil
+			return &pb.SetIfLessThanResponse{Success: false, Response: v}, nil
 		}
 	}
 
