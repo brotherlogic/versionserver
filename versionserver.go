@@ -85,7 +85,10 @@ func (s *Server) GetState() []*pbg.State {
 	for _, k := range s.versions {
 		keys = append(keys, k.GetKey())
 	}
-	return []*pbg.State{&pbg.State{Key: "keys", Text: fmt.Sprintf("%v", keys)}}
+	return []*pbg.State{
+		&pbg.State{Key: "keys", Text: fmt.Sprintf("%v", keys)},
+		&pbg.State{Key: "dir", Text: fmt.Sprintf("%v", s.dir)},
+	}
 }
 
 func main() {
