@@ -32,7 +32,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("Error reading version: %v", err)
 		}
-		fmt.Printf("Answer = %v\n", answer)
+		fmt.Printf("Answer = %v [%v]\n", answer, time.Unix(answer.Version.Value, 0))
 	case "set":
 		val, _ := strconv.Atoi(os.Args[3])
 		answer, err := registry.SetVersion(context.Background(), &pb.SetVersionRequest{Set: &pb.Version{Key: os.Args[2], Value: int64(val)}})
@@ -40,7 +40,6 @@ func main() {
 			log.Fatalf("Error writing version: %v", err)
 		}
 		fmt.Printf("Answer = %v\n", answer)
-
 	case "guard":
 		answer, err := registry.SetIfLessThan(context.Background(),
 			&pb.SetIfLessThanRequest{
