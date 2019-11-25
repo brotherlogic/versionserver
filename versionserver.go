@@ -103,7 +103,7 @@ func main() {
 	}
 	server := Init(*dir)
 
-	server.RegisterServer("versionserver", false)
+	server.RegisterServerV2("versionserver", false)
 	err := server.Serve()
 
 	if err != nil {
