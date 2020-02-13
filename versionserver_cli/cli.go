@@ -15,14 +15,18 @@ import (
 
 	//Needed to pull in gzip encoding init
 	_ "google.golang.org/grpc/encoding/gzip"
+	"google.golang.org/grpc/resolver"
 )
 
+func init() {
+	resolver.Register(&utils.DiscoveryClientResolverBuilder{})
+}
+
 func main() {
-	ip, port, err := utils.Resolve("versionserver", "versionserver-cli")
+	conn, err := grpc.Dial("discovery:///versionserver", grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("Error resolving server: %v", err)
+		log.Fatalf("%v", err)
 	}
-	conn, _ := grpc.Dial(ip+":"+strconv.Itoa(int(port)), grpc.WithInsecure())
 	defer conn.Close()
 
 	registry := pb.NewVersionServerClient(conn)

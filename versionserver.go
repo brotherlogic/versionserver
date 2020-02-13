@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/brotherlogic/goserver"
+	"github.com/golang/protobuf/proto"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
@@ -82,10 +83,13 @@ func (s *Server) Mote(ctx context.Context, master bool) error {
 // GetState gets the state of the server
 func (s *Server) GetState() []*pbg.State {
 	keys := make([]string, 0)
+	size := int64(0)
 	for _, k := range s.versions {
 		keys = append(keys, k.GetKey())
+		size += int64(proto.Size(k))
 	}
 	return []*pbg.State{
+		&pbg.State{Key: "sizington", Value: size},
 		&pbg.State{Key: "keys", Text: fmt.Sprintf("%v", keys)},
 		&pbg.State{Key: "dir", Text: fmt.Sprintf("%v", s.dir)},
 	}
