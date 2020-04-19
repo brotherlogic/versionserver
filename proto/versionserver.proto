@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package versionserver;
 
+option go_package = "github.com/brotherlogic/versionserver/proto";
+
 message Version {
   string key = 1;
   int64 value = 2;

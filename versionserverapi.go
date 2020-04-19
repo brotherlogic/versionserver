@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"time"
 
 	pb "github.com/brotherlogic/versionserver/proto"
 	"golang.org/x/net/context"
@@ -53,10 +52,6 @@ func (s *Server) SetIfLessThan(ctx context.Context, in *pb.SetIfLessThanRequest)
 	for _, v := range s.versions {
 		if v.GetKey() == in.GetSet().GetKey() {
 			if v.Value < in.TriggerValue {
-				if s.slowDown {
-					time.Sleep(time.Second)
-				}
-
 				v.Value = in.GetSet().GetValue()
 				v.Setter = in.GetSet().GetSetter()
 				err := s.saveVersions()
