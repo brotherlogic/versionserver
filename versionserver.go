@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -10,7 +11,6 @@ import (
 
 	"github.com/brotherlogic/goserver"
 	"github.com/golang/protobuf/proto"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
 	pbg "github.com/brotherlogic/goserver/proto"
@@ -107,9 +107,12 @@ func main() {
 	}
 	server := Init(*dir)
 
-	server.RegisterServerV2("versionserver", false, false)
-	err := server.Serve()
+	err := server.RegisterServerV2("versionserver", false, false)
+	if err != nil {
+		return
+	}
 
+	err = server.Serve()
 	if err != nil {
 		fmt.Printf("Error serving: %v\n", err)
 	}
