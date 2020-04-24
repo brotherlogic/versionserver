@@ -1,10 +1,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
 	pb "github.com/brotherlogic/versionserver/proto"
-	"golang.org/x/net/context"
 )
 
 //GetVersion gets the version for the given key
