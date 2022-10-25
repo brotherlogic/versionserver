@@ -10,7 +10,7 @@ import (
 	"sync"
 
 	"github.com/brotherlogic/goserver"
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/grpc"
 
 	pbg "github.com/brotherlogic/goserver/proto"
